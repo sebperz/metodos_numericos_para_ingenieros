@@ -11,6 +11,7 @@ for (const m of metodos) {
 }
 
 const currentPath = Astro.url.pathname;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 ---
 
 <!doctype html>
@@ -34,7 +35,7 @@ const currentPath = Astro.url.pathname;
     <div class="flex min-h-screen">
       <aside id="sidebar" class="flex-col w-64 border-r border-border bg-sidebar-background text-sidebar-foreground shrink-0 transition-all duration-300 ease-in-out overflow-hidden">
         <div class="p-4 border-b border-sidebar-border">
-          <a href="/" class="font-semibold text-lg tracking-tight">
+          <a href={base} class="font-semibold text-lg tracking-tight">
             Métodos Numéricos
           </a>
           <p class="text-xs text-muted-foreground mt-0.5">Chapra & Canale</p>
@@ -49,7 +50,7 @@ const currentPath = Astro.url.pathname;
                 <ul class="space-y-0.5">
                   {items.map((m) => {
                     const slug = m.id.replace(/^metodos\//, "").replace(/\.md$/, "");
-                    const href = `/metodos/${slug}`;
+                    const href = `${base}/metodos/${slug}`;
                     const isActive = currentPath === href;
                     return (
                       <li>
@@ -95,7 +96,7 @@ const currentPath = Astro.url.pathname;
                 <path d="M1.5 3C1.22386 3 1 3.22386 1 3.5C1 3.77614 1.22386 4 1.5 4H13.5C13.7761 4 14 3.77614 14 3.5C14 3.22386 13.7761 3 13.5 3H1.5ZM1.5 7C1.22386 7 1 7.22386 1 7.5C1 7.77614 1.22386 8 1.5 8H13.5C13.7761 8 14 7.77614 14 7.5C14 7.22386 13.7761 7 13.5 7H1.5ZM1.5 11C1.22386 11 1 11.2239 1 11.5C1 11.7761 1.22386 12 1.5 12H13.5C13.7761 12 14 11.7761 14 11.5C14 11.2239 13.7761 11 13.5 11H1.5Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" />
               </svg>
             </button>
-            <a href="/" class="font-semibold text-lg tracking-tight ml-1">Métodos Numéricos</a>
+            <a href={base} class="font-semibold text-lg tracking-tight ml-1">Métodos Numéricos</a>
           </div>
           <button
             id="theme-toggle"
@@ -130,7 +131,7 @@ const currentPath = Astro.url.pathname;
                   <ul class="space-y-0.5">
                     {items.map((m) => {
                       const slug = m.id.replace(/^metodos\//, "").replace(/\.md$/, "");
-                      const href = `/metodos/${slug}`;
+                      const href = `${base}/metodos/${slug}`;
                       const isActive = currentPath === href;
                       return (
                         <li>
