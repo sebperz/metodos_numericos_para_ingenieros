@@ -1,0 +1,20 @@
+import * as React from "react"
+import { cn } from "@/lib/utils"
+
+function Separator({ className, orientation = "horizontal", ...props }: React.ComponentProps<"hr"> & { orientation?: "horizontal" | "vertical" }) {
+  return (
+    <hr
+      data-slot="separator"
+      role="separator"
+      aria-orientation={orientation}
+      className={cn(
+        "bg-border shrink-0",
+        orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export { Separator }

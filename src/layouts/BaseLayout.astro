@@ -1,0 +1,128 @@
+---
+import { getCollection } from "astro:content";
+import "../styles/global.css";
+
+const metodos = await getCollection("metodos");
+const areas = new Map<string, typeof metodos>();
+for (const m of metodos) {
+  const area = m.data.area;
+  if (!areas.has(area)) areas.set(area, []);
+  areas.get(area)!.push(m);
+}
+
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Métodos Numéricos Interactivos</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body class="bg-background text-foreground antialiased">
+    <div class="flex min-h-screen">
+      <aside class="hidden md:flex flex-col w-64 border-r border-border bg-sidebar-background text-sidebar-foreground shrink-0">
+        <div class="p-4 border-b border-sidebar-border">
+          <a href="/" class="font-semibold text-lg tracking-tight">
+            Métodos Numéricos
+          </a>
+          <p class="text-xs text-muted-foreground mt-0.5">Chapra & Canale</p>
+        </div>
+        <nav class="flex-1 overflow-y-auto p-3">
+          {
+            Array.from(areas.entries()).map(([area, items]) => (
+              <div class="mb-4">
+                <h3 class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-2">
+                  {area}
+                </h3>
+                <ul class="space-y-0.5">
+                  {items.map((m) => {
+                    const slug = m.id.replace(/^metodos\//, "").replace(/\.md$/, "");
+                    const href = `/metodos/${slug}`;
+                    const isActive = currentPath === href;
+                    return (
+                      <li>
+                        <a
+                          href={href}
+                          class={`block px-3 py-1.5 rounded-md text-sm transition-colors ${
+                            isActive
+                              ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                              : "hover:bg-sidebar-accent/50 text-sidebar-foreground/80"
+                          }`}
+                        >
+                          {m.data.titulo}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))
+          }
+        </nav>
+      </aside>
+
+      <div class="flex-1 flex flex-col min-w-0">
+        <header class="md:hidden flex items-center justify-between p-4 border-b border-border">
+          <a href="/" class="font-semibold text-lg tracking-tight">Métodos Numéricos</a>
+          <button
+            id="menu-toggle"
+            class="p-2 rounded-md hover:bg-accent"
+            aria-label="Abrir menú"
+          >
+            <svg width="20" height="20" viewBox="0 0 15 15" fill="none">
+              <path d="M1.5 3C1.22386 3 1 3.22386 1 3.5C1 3.77614 1.22386 4 1.5 4H13.5C13.7761 4 14 3.77614 14 3.5C14 3.22386 13.7761 3 13.5 3H1.5ZM1.5 7C1.22386 7 1 7.22386 1 7.5C1 7.77614 1.22386 8 1.5 8H13.5C13.7761 8 14 7.77614 14 7.5C14 7.22386 13.7761 7 13.5 7H1.5ZM1.5 11C1.22386 11 1 11.2239 1 11.5C1 11.7761 1.22386 12 1.5 12H13.5C13.7761 12 14 11.7761 14 11.5C14 11.2239 13.7761 11 13.5 11H1.5Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" />
+            </svg>
+          </button>
+        </header>
+
+        <div id="mobile-nav" class="hidden md:hidden border-b border-border bg-sidebar-background p-4">
+          <nav>
+            {
+              Array.from(areas.entries()).map(([area, items]) => (
+                <div class="mb-4">
+                  <h3 class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                    {area}
+                  </h3>
+                  <ul class="space-y-0.5">
+                    {items.map((m) => {
+                      const slug = m.id.replace(/^metodos\//, "").replace(/\.md$/, "");
+                      const href = `/metodos/${slug}`;
+                      const isActive = currentPath === href;
+                      return (
+                        <li>
+                          <a
+                            href={href}
+                            class={`block px-3 py-1.5 rounded-md text-sm transition-colors ${
+                              isActive
+                                ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                                : "hover:bg-sidebar-accent/50 text-sidebar-foreground/80"
+                            }`}
+                          >
+                            {m.data.titulo}
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ))
+            }
+          </nav>
+        </div>
+
+        <main class="flex-1">
+          <slot />
+        </main>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById("menu-toggle")?.addEventListener("click", () => {
+        document.getElementById("mobile-nav")?.classList.toggle("hidden");
+      });
+    </script>
+  </body>
+</html>

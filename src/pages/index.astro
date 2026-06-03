@@ -1,0 +1,61 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+
+const metodos = await getCollection("metodos");
+const areas = new Map<string, typeof metodos>();
+for (const m of metodos) {
+  const area = m.data.area;
+  if (!areas.has(area)) areas.set(area, []);
+  areas.get(area)!.push(m);
+}
+---
+
+<BaseLayout>
+  <div class="max-w-4xl mx-auto p-6 md:p-10">
+    <div class="mb-10">
+      <h1 class="text-3xl font-bold tracking-tight mb-2">
+        Métodos Numéricos Interactivos
+      </h1>
+      <p class="text-lg text-muted-foreground">
+        Explorá, ejecutá y visualizá los métodos numéricos del libro de Chapra & Canale directamente en el navegador.
+      </p>
+    </div>
+
+    <div class="grid gap-6 md:grid-cols-2">
+      {
+        Array.from(areas.entries()).map(([area, items]) => (
+          <Card>
+            <CardHeader>
+              <CardTitle class="text-lg">{area}</CardTitle>
+              <CardDescription>
+                {items.length} método{items.length !== 1 ? "s" : ""} disponible{items.length !== 1 ? "s" : ""}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul class="space-y-1">
+                {items.map((m) => {
+                  const slug = m.id.replace(/^metodos\//, "").replace(/\.md$/, "");
+                  return (
+                    <li>
+                      <a
+                        href={`/metodos/${slug}`}
+                        class="block px-3 py-1.5 rounded-md text-sm hover:bg-accent hover:text-accent-foreground transition-colors -mx-2"
+                      >
+                        <span class="font-medium">{m.data.titulo}</span>
+                        <span class="text-muted-foreground ml-2">
+                          — {m.data.descripcion_breve}
+                        </span>
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </CardContent>
+          </Card>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>
