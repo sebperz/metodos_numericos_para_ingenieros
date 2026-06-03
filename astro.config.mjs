@@ -6,6 +6,8 @@ import rehypeKatex from "rehype-katex";
 import githubDarkHighContrast from "@shikijs/themes/github-dark-high-contrast";
 
 export default defineConfig({
+  site: "https://sebperz.github.io",
+  base: "metodos_numericos_para_ingenieros",
   integrations: [react()],
   markdown: {
     remarkPlugins: [remarkMath],
