@@ -73,8 +73,8 @@ __salida__ = {
     "iteraciones": iteraciones,
     "resultado": xr,
     "datos_grafico": {
-        "x": [it["a"] for it in iteraciones] + [iteraciones[-1]["b"]],
-        "y": [0] * len(iteraciones),
+        "x": [it["i"] for it in iteraciones],
+        "y": [it["ea"] if it["ea"] is not None else 1 for it in iteraciones],
     },
 }
 ```

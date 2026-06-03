@@ -21,61 +21,63 @@ const rawBody: string = metodo.body || "";
 const codeMatch = rawBody.match(/```python\n([\s\S]*?)```/);
 const codigo = codeMatch ? codeMatch[1].trim() : "";
 
-const htmlContent = metodo.rendered?.html || "";
+let htmlContent = metodo.rendered?.html || "";
+
+const preMatch = htmlContent.match(/<pre\b[^>]*>[\s\S]*?<\/pre>/);
+let codeHtml = "";
+if (preMatch) {
+  codeHtml = preMatch[0];
+  htmlContent = htmlContent.slice(0, preMatch.index!) + htmlContent.slice(preMatch.index! + preMatch[0].length);
+}
 ---
 
 <BaseLayout>
-  <div class="max-w-7xl mx-auto p-6 md:p-8">
-    <div class="flex flex-col lg:flex-row gap-8">
-      <div class="flex-1 min-w-0 lg:w-[60%]">
-        <h1 class="text-2xl font-bold tracking-tight mb-6">{titulo}</h1>
+  <div class="max-w-5xl mx-auto p-6 md:p-8 space-y-10">
+    <h1 class="text-2xl font-bold tracking-tight">{titulo}</h1>
 
-        <div class="prose prose-neutral max-w-none leading-relaxed
-          prose-headings:text-foreground
-          prose-p:text-foreground/85 prose-p:leading-7 prose-p:mb-5
-          prose-li:text-foreground/85 prose-li:leading-7
-          prose-a:text-accent
-          prose-code:font-mono prose-code:text-sm prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded
-          prose-pre:bg-muted prose-pre:border prose-pre:border-border"
-        >
-          <Fragment set:html={htmlContent} />
-        </div>
-
-        {codigo && (
-          <div class="mt-8">
-            <div class="flex items-center justify-between mb-2">
-              <h3 class="text-sm font-medium text-muted-foreground">Codigo Python</h3>
-              <button
-                id="copy-btn"
-                class="text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-              >
-                Copiar
-              </button>
-            </div>
-            <pre
-              id="code-block"
-              class="bg-muted border border-border rounded-lg p-4 overflow-x-auto text-sm font-mono leading-relaxed"
-            ><code>{codigo}</code></pre>
-          </div>
-        )}
-      </div>
-
-      <div class="lg:w-[40%] shrink-0">
-        <div class="lg:sticky lg:top-8">
-          <MetodoPanel
-            codigo={codigo}
-            parametros={JSON.parse(JSON.stringify(parametros))}
-            tipoGrafico={tipo_grafico}
-            client:load
-          />
-        </div>
-      </div>
+    <div class="prose prose-neutral max-w-none leading-relaxed
+      prose-headings:text-foreground
+      prose-p:text-foreground/85 prose-p:leading-7 prose-p:mb-5
+      prose-li:text-foreground/85 prose-li:leading-7
+      prose-a:text-accent
+      prose-code:font-mono prose-code:text-sm prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded
+      prose-pre:bg-muted prose-pre:border prose-pre:border-border"
+    >
+      <Fragment set:html={htmlContent} />
     </div>
+
+    <MetodoPanel
+      codigo={codigo}
+      parametros={JSON.parse(JSON.stringify(parametros))}
+      tipoGrafico={tipo_grafico}
+      client:load
+    />
+
+    {codeHtml && (
+      <div class="pt-4">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-sm font-medium text-muted-foreground">Codigo Python</h3>
+          <button
+            id="copy-btn"
+            class="text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          >
+            Copiar
+          </button>
+        </div>
+        <div
+          id="code-block"
+          class="[&>pre]:bg-muted [&>pre]:border [&>pre]:border-border [&>pre]:rounded-lg [&>pre]:p-4 [&>pre]:overflow-x-auto [&>pre]:text-sm [&>pre]:font-mono [&>pre]:leading-relaxed"
+        >
+          <Fragment set:html={codeHtml} />
+        </div>
+      </div>
+    )}
   </div>
 
   <script>
     document.getElementById("copy-btn")?.addEventListener("click", () => {
-      const code = document.getElementById("code-block")?.textContent;
+      const codeEl = document.getElementById("code-block");
+      const code = codeEl?.textContent?.trim();
       if (code) {
         navigator.clipboard.writeText(code).then(() => {
           const btn = document.getElementById("copy-btn");
